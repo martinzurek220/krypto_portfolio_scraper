@@ -239,7 +239,7 @@ class Binance(Tokens):
     def _connection(self):
 
         # Pripojeni API
-        self.client = Client(config.api_key, config.secret_key)
+        self.client = Client(config.binance_api_key, config.binance_secret_key)
 
     def get_spot_asets(self):
 
@@ -251,7 +251,7 @@ class Binance(Tokens):
                 # Ulozi do slovniku info o tokenu {'BTC': '0.5', 'ETH': '2.0'}
                 self.spot_tokens[token['asset']] = token['free']
 
-        print(self.spot_tokens)
+        # print(self.spot_tokens)
 
     def get_token_price(self):
 
@@ -270,13 +270,13 @@ class Binance(Tokens):
                     # print(token)
                     # price vrati {'symbol': 'BTCUSDT', 'price': '24700.91000000'}
                     price = self.client.get_symbol_ticker(symbol=token+"USDT")
-                    print(price)
-                    print(type(price["price"]))
+                    # print(price)
+                    # print(type(price["price"]))
                     self.spot_prices[token] = price
                 elif token in stable_coins:
                     self.spot_prices[token] = {"symbol": token, "price": 1}
 
-        print(self.spot_prices)
+        # print(self.spot_prices)
 
     def get_assets(self):
 
@@ -292,16 +292,24 @@ class Binance(Tokens):
         for key, value in self.spot_prices.items():  # do slovniku s amount doplni dollar value
             self.assets[key]["dollar_value"] = float(value["price"]) * float(self.assets[key]["amount"])
 
+        print("Getting data from Binance")
         print(self.assets)
 
 
 class AssetsCounter:
 
     def __init__(self):
-        self.all_assets = {}
-        self.all_assets_list = []
 
-    def count_assets(self, objects):
+        self.all_assets_list = []
+        self.blockchain_assets_list = []
+        self.cex_assets_list = []
+
+        # Assets
+        self.all_assets = {}
+        self.blockchain_assets = {}
+        self.cex_assets = {}
+
+    def count_all_assets(self, objects):
         """
 
         Příklad výstupu:
@@ -331,6 +339,50 @@ class AssetsCounter:
             slovnik = {"name": key, "amount": round(value["amount"], 2), "dollar_value": round(value["dollar_value"])}
             self.all_assets_list.append(slovnik)
 
+    def count_blockchain_cex_assets(self, objects):
+
+        for obj in objects.created_objects:
+
+            if obj.division == "Blockchain":
+                for key, value in obj.assets.items():
+                    # print(f"key: {key}, value: {value}")
+
+                    if key not in self.blockchain_assets:
+                        value_part = {"amount": value["amount"], "dollar_value": value["dollar_value"]}
+                        self.blockchain_assets[key] = value_part
+                    else:
+                        self.blockchain_assets[key]["amount"] += value["amount"]
+                        self.blockchain_assets[key]["dollar_value"] += value["dollar_value"]
+            elif obj.division == "Cex":
+                for key, value in obj.assets.items():
+                    # print(f"key: {key}, value: {value}")
+
+                    if key not in self.cex_assets:
+                        value_part = {"amount": value["amount"], "dollar_value": value["dollar_value"]}
+                        self.cex_assets[key] = value_part
+                    else:
+                        self.cex_assets[key]["amount"] += value["amount"]
+                        self.cex_assets[key]["dollar_value"] += value["dollar_value"]
+
+        for key, value in self.blockchain_assets.items():
+            slovnik = {"name": key, "amount": round(value["amount"], 2), "dollar_value": round(value["dollar_value"])}
+            self.blockchain_assets_list.append(slovnik)
+
+        for key, value in self.cex_assets.items():
+            slovnik = {"name": key, "amount": round(value["amount"], 2), "dollar_value": round(value["dollar_value"])}
+            self.cex_assets_list.append(slovnik)
+
+        print("Blockchain assets: ", self.blockchain_assets)
+        print("Cex assets: ", self.cex_assets)
+
+        print("Blockchain assets database: ", self.blockchain_assets_list)
+        print("Cex assets database: ", self.cex_assets_list)
+
+    def count_assets(self, objects):
+
+        self.count_all_assets(objects)
+        self.count_blockchain_cex_assets(objects)
+
 
 class Database:
 
@@ -349,9 +401,8 @@ class Database:
 
     def connection(self):
 
-        # echo=True  = debug mod
-        # engine = create_engine("postgresql+psycopg2://postgres:Databaze123@localhost:5432/portfolio", echo=True)
-        self.engine = create_engine("postgresql+psycopg2://postgres:Databaze123@localhost:5432/portfolio")
+        # engine = create_engine(config.postgresql_engine, echo=True)   =>   echo=True  = debug mod
+        self.engine = create_engine(config.postgresql_engine)
 
         self.metadata = MetaData()
 
@@ -436,7 +487,7 @@ if __name__ == "__main__":
     obj_input = UserInput()
 
     # obj_input.nacti_soubor(obj_adresy, "adresy.json")
-    obj_input.load_file(obj_addresses, "adresy.json")
+    obj_input.load_file(obj_addresses, "adresy_test.json")
     obj_input.create_class_objects()
 
     # print(obj_input.created_objects)
