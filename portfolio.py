@@ -392,7 +392,10 @@ class Database:
         self.metadata = None
 
         # Tabulky
-        self.viewer_portfolio = None
+        self.viewer_portfolio_assets = None
+        self.viewer_blockchain_cex_assets = None
+        self.viewer_hodl_staking_farming_stable_assets = None
+        self.viewer_dollar_value = None
 
         # Users
         self.my_user = []
@@ -408,14 +411,48 @@ class Database:
 
     def add_tables(self):
 
-        self.viewer_portfolio = Table(
-            "viewer_portfolio",
+        self.viewer_portfolio_assets = Table(
+            "viewer_portfolio_assets",
             self.metadata,
             Column("id", BigInteger),
             Column("user_id", Integer),
             Column("date_and_time", Text),
             Column("name", Text),
             Column("amount", Numeric),
+            Column("dollar_value", Numeric)
+        )
+
+        self.viewer_blockchain_cex_assets = Table(
+            "viewer_blockchain_cex_assets",
+            self.metadata,
+            Column("id", BigInteger),
+            Column("user_id", Integer),
+            Column("date_and_time", Text),
+            Column("division", Text),
+            Column("name", Text),
+            Column("amount", Numeric),
+            Column("dollar_value", Numeric)
+        )
+
+        self.viewer_hodl_staking_farming_stable_assets = Table(
+            "viewer_hodl_staking_farming_stable_assets",
+            self.metadata,
+            Column("id", BigInteger),
+            Column("user_id", Integer),
+            Column("date_and_time", Text),
+            Column("division", Text),
+            Column("name", Text),
+            Column("amount", Numeric),
+            Column("dollar_value", Numeric)
+        )
+
+        self.viewer_dollar_value = Table(
+            "viewer_dollar_value",
+            self.metadata,
+            Column("id", BigInteger),
+            Column("user_id", Integer),
+            Column("date_and_time", Text),
+            Column("division", Text),
             Column("dollar_value", Numeric)
         )
 
@@ -468,11 +505,11 @@ class Database:
 
         self.fill_my_user()  # Vlozi data pro tabulky pro muj account
         self.fill_demo_user()  # Vlozi data pro tabulky pro demo account
-        self.fill_demo_live_user()  # Vlozi data pro tabulky pro demo account
+        self.fill_demo_live_user()  # Vlozi data pro tabulky pro demo_live account
 
-        connection.execute(self.viewer_portfolio.insert(), self.my_user)
-        connection.execute(self.viewer_portfolio.insert(), self.demo_user)
-        connection.execute(self.viewer_portfolio.insert(), self.demo_live_user)
+        connection.execute(self.viewer_portfolio_assets.insert(), self.my_user)
+        connection.execute(self.viewer_portfolio_assets.insert(), self.demo_user)
+        connection.execute(self.viewer_portfolio_assets.insert(), self.demo_live_user)
 
         connection.commit()
 
