@@ -300,6 +300,7 @@ class AssetsCounter:
 
     def __init__(self):
 
+        # Pripravene seznamy pro zapis do databaze
         self.all_assets_list = []
         self.blockchain_assets_list = []
         self.cex_assets_list = []
@@ -308,6 +309,10 @@ class AssetsCounter:
         self.all_assets = {}
         self.blockchain_assets = {}
         self.cex_assets = {}
+
+        # Dollar value
+        self.blockchain_dollar_value = 0
+        self.cex_dollar_value = 0
 
     def count_all_assets(self, objects):
         """
@@ -348,28 +353,37 @@ class AssetsCounter:
                     # print(f"key: {key}, value: {value}")
 
                     if key not in self.blockchain_assets:
-                        value_part = {"amount": value["amount"], "dollar_value": value["dollar_value"]}
+                        value_part = {"division": "Blockchain", "amount": value["amount"],
+                                      "dollar_value": value["dollar_value"]}
                         self.blockchain_assets[key] = value_part
+                        self.blockchain_dollar_value += value["dollar_value"]
                     else:
                         self.blockchain_assets[key]["amount"] += value["amount"]
                         self.blockchain_assets[key]["dollar_value"] += value["dollar_value"]
+                        self.blockchain_dollar_value += value["dollar_value"]
             elif obj.division == "Cex":
                 for key, value in obj.assets.items():
                     # print(f"key: {key}, value: {value}")
 
                     if key not in self.cex_assets:
-                        value_part = {"amount": value["amount"], "dollar_value": value["dollar_value"]}
+                        value_part = {"division": "Cex", "amount": value["amount"], "dollar_value": value["dollar_value"]}
                         self.cex_assets[key] = value_part
+                        self.cex_dollar_value += value["dollar_value"]
                     else:
                         self.cex_assets[key]["amount"] += value["amount"]
                         self.cex_assets[key]["dollar_value"] += value["dollar_value"]
+                        self.cex_dollar_value += value["dollar_value"]
 
         for key, value in self.blockchain_assets.items():
-            slovnik = {"name": key, "amount": round(value["amount"], 2), "dollar_value": round(value["dollar_value"])}
+            # TODO hodit usera jinam
+            slovnik = {"user_id": 2, "division": "Blockchain", "name": key, "amount": round(value["amount"], 2),
+                       "dollar_value": round(value["dollar_value"])}
             self.blockchain_assets_list.append(slovnik)
 
         for key, value in self.cex_assets.items():
-            slovnik = {"name": key, "amount": round(value["amount"], 2), "dollar_value": round(value["dollar_value"])}
+            # TODO hodit usera jinam
+            slovnik = {"user_id": 2, "division": "Cex", "name": key, "amount": round(value["amount"], 2),
+                       "dollar_value": round(value["dollar_value"])}
             self.cex_assets_list.append(slovnik)
 
         print("Blockchain assets: ", self.blockchain_assets)
@@ -377,6 +391,9 @@ class AssetsCounter:
 
         print("Blockchain assets database: ", self.blockchain_assets_list)
         print("Cex assets database: ", self.cex_assets_list)
+
+        print(self.blockchain_dollar_value)
+        print(self.cex_dollar_value)
 
     def count_assets(self, objects):
 
@@ -460,6 +477,9 @@ class Database:
 
         self.add_other_informations()
 
+        self.a = vypocet.blockchain_assets_list
+        self.b = vypocet.cex_assets_list
+
     def fill_demo_user(self):
 
         self.demo_user = [
@@ -510,6 +530,9 @@ class Database:
         connection.execute(self.viewer_portfolio_assets.insert(), self.my_user)
         connection.execute(self.viewer_portfolio_assets.insert(), self.demo_user)
         connection.execute(self.viewer_portfolio_assets.insert(), self.demo_live_user)
+
+        connection.execute(self.viewer_blockchain_cex_assets.insert(), self.a)
+        connection.execute(self.viewer_blockchain_cex_assets.insert(), self.b)
 
         connection.commit()
 
