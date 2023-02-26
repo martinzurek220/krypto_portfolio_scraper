@@ -544,6 +544,9 @@ class Database:
             {'user_id': 3, 'category': 'hodl_staking_farming_stable', 'division': "Staking", 'dollar_value': 50},
             {'user_id': 3, 'category': 'hodl_staking_farming_stable', 'division': "Farming", 'dollar_value': 50},
             {'user_id': 3, 'category': 'hodl_staking_farming_stable', 'division': "Stable", 'dollar_value': 500},
+            {'user_id': 3, 'category': 'network', 'division': "Cosmos", 'dollar_value': 500},
+            {'user_id': 3, 'category': 'network', 'division': "Ethereum", 'dollar_value': 100},
+            {'user_id': 3, 'category': 'network', 'division': "Binance", 'dollar_value': 300},
         ]
 
     def fill_demo_live_user(self):
