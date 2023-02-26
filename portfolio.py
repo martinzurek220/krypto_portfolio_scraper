@@ -412,12 +412,18 @@ class Database:
         self.viewer_portfolio_assets = None
         self.viewer_blockchain_cex_assets = None
         self.viewer_hodl_staking_farming_stable_assets = None
+        self.viewer_networks_assets = None
         self.viewer_dollar_value = None
 
         # Users
         self.my_user = []
-        self.demo_user = []
+        self.demo_user_all_assets = []
         self.demo_live_user = []
+
+        self.demo_user_blockchain_cex_assets = []
+        self.demo_user_hodl_staking_farming_stable_assets = []
+        self.demo_user_networks_assets = []
+        self.demo_user_dollar_value = []
 
     def connection(self):
 
@@ -463,12 +469,25 @@ class Database:
             Column("dollar_value", Numeric)
         )
 
+        self.viewer_networks_assets = Table(
+            "viewer_networks_assets",
+            self.metadata,
+            Column("id", BigInteger),
+            Column("user_id", Integer),
+            Column("date_and_time", Text),
+            Column("division", Text),
+            Column("name", Text),
+            Column("amount", Numeric),
+            Column("dollar_value", Numeric)
+        )
+
         self.viewer_dollar_value = Table(
             "viewer_dollar_value",
             self.metadata,
             Column("id", BigInteger),
             Column("user_id", Integer),
             Column("date_and_time", Text),
+            Column("category", Text),
             Column("division", Text),
             Column("dollar_value", Numeric)
         )
@@ -482,13 +501,49 @@ class Database:
 
     def fill_demo_user(self):
 
-        self.demo_user = [
+        self.demo_user_all_assets = [
             {'user_id': 3, 'name': 'BTC', 'amount': 0.0005, 'dollar_value': 100},
             {'user_id': 3, 'name': 'SOL', 'amount': 5, 'dollar_value': 100},
             {'user_id': 3, 'name': 'NEAR', 'amount': 20, 'dollar_value': 50},
             {'user_id': 3, 'name': 'DOT', 'amount': 10, 'dollar_value': 40},
             {'user_id': 3, 'name': 'ATOM', 'amount': 15, 'dollar_value': 250},
             {'user_id': 3, 'name': 'ETH', 'amount': 0.2, 'dollar_value': 300}
+        ]
+
+        self.demo_user_blockchain_cex_assets = [
+            {'user_id': 3, 'division': "Blockchain", 'name': 'BTC', 'amount': 0.0005, 'dollar_value': 100},
+            {'user_id': 3, 'division': "Blockchain", 'name': 'SOL', 'amount': 5, 'dollar_value': 100},
+            {'user_id': 3, 'division': "Blockchain", 'name': 'NEAR', 'amount': 20, 'dollar_value': 50},
+            {'user_id': 3, 'division': "Cex", 'name': 'DOT', 'amount': 10, 'dollar_value': 40},
+            {'user_id': 3, 'division': "Cex", 'name': 'ATOM', 'amount': 15, 'dollar_value': 250},
+            {'user_id': 3, 'division': "Cex", 'name': 'ETH', 'amount': 0.2, 'dollar_value': 300}
+        ]
+
+        self.demo_user_hodl_staking_farming_stable_assets = [
+            {'user_id': 3, 'division': "Hodl", 'name': 'ATOM', 'amount': 0.0005, 'dollar_value': 100},
+            {'user_id': 3, 'division': "Hodl", 'name': 'OSMO', 'amount': 5, 'dollar_value': 100},
+            {'user_id': 3, 'division': "Staking", 'name': 'ETH', 'amount': 20, 'dollar_value': 50},
+            {'user_id': 3, 'division': "Farming", 'name': 'wETH', 'amount': 10, 'dollar_value': 40},
+            {'user_id': 3, 'division': "Stable", 'name': 'USDT', 'amount': 150, 'dollar_value': 150}
+        ]
+
+        self.demo_user_networks_assets = [
+            {'user_id': 3, 'division': "Cosmos", 'name': 'ATOM', 'amount': 0.0005, 'dollar_value': 100},
+            {'user_id': 3, 'division': "Cosmos", 'name': 'OSMO', 'amount': 5, 'dollar_value': 100},
+            {'user_id': 3, 'division': "Ethereum", 'name': 'ETH', 'amount': 20, 'dollar_value': 50},
+            {'user_id': 3, 'division': "Ethereum", 'name': 'wETH', 'amount': 10, 'dollar_value': 40},
+            {'user_id': 3, 'division': "Binance", 'name': 'ATOM', 'amount': 15, 'dollar_value': 250},
+            {'user_id': 3, 'division': "Binance", 'name': 'ETH', 'amount': 0.2, 'dollar_value': 300}
+        ]
+
+        self.demo_user_dollar_value = [
+            {'user_id': 3, 'category': 'blockchain_cex', 'division': "Blockchain", 'dollar_value': 100},
+            {'user_id': 3, 'category': 'blockchain_cex', 'division': "Cex", 'dollar_value': 100},
+            {'user_id': 3, 'category': 'blockchain_cex', 'division': "Cex", 'dollar_value': 100},
+            {'user_id': 3, 'category': 'hodl_staking_farming_stable', 'division': "Hodl", 'dollar_value': 100},
+            {'user_id': 3, 'category': 'hodl_staking_farming_stable', 'division': "Staking", 'dollar_value': 50},
+            {'user_id': 3, 'category': 'hodl_staking_farming_stable', 'division': "Farming", 'dollar_value': 50},
+            {'user_id': 3, 'category': 'hodl_staking_farming_stable', 'division': "Stable", 'dollar_value': 500},
         ]
 
     def fill_demo_live_user(self):
@@ -528,11 +583,19 @@ class Database:
         self.fill_demo_live_user()  # Vlozi data pro tabulky pro demo_live account
 
         connection.execute(self.viewer_portfolio_assets.insert(), self.my_user)
-        connection.execute(self.viewer_portfolio_assets.insert(), self.demo_user)
+        connection.execute(self.viewer_portfolio_assets.insert(), self.demo_user_all_assets)
         connection.execute(self.viewer_portfolio_assets.insert(), self.demo_live_user)
 
         connection.execute(self.viewer_blockchain_cex_assets.insert(), self.a)
         connection.execute(self.viewer_blockchain_cex_assets.insert(), self.b)
+        connection.execute(self.viewer_blockchain_cex_assets.insert(), self.demo_user_blockchain_cex_assets)
+
+        connection.execute(self.viewer_hodl_staking_farming_stable_assets.insert(),
+                           self.demo_user_hodl_staking_farming_stable_assets)
+
+        connection.execute(self.viewer_networks_assets.insert(), self.demo_user_networks_assets)
+
+        connection.execute(self.viewer_dollar_value.insert(), self.demo_user_dollar_value)
 
         connection.commit()
 
