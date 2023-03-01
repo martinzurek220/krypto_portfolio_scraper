@@ -107,11 +107,6 @@ class LoadJsonFile(LoadFile):
         self.data_file = None
 
     def load_file(self, nazev_souboru):
-        """
-
-        :param nazev_souboru: "nazev_souboru.json"
-        :return:
-        """
 
         with open(nazev_souboru) as f:
             self.data_file = json.load(f)
@@ -502,51 +497,59 @@ class Database:
     def fill_demo_user(self):
 
         self.demo_user_all_assets = [
-            {'user_id': 3, 'name': 'BTC', 'amount': 0.0005, 'dollar_value': 100},
-            {'user_id': 3, 'name': 'SOL', 'amount': 5, 'dollar_value': 100},
-            {'user_id': 3, 'name': 'NEAR', 'amount': 20, 'dollar_value': 50},
-            {'user_id': 3, 'name': 'DOT', 'amount': 10, 'dollar_value': 40},
-            {'user_id': 3, 'name': 'ATOM', 'amount': 15, 'dollar_value': 250},
-            {'user_id': 3, 'name': 'ETH', 'amount': 0.2, 'dollar_value': 300}
+            {'user_id': 3, 'name': 'wETH', 'amount': 0.125, 'dollar_value': 200},
+            {'user_id': 3, 'name': 'ETH', 'amount': 0.73, 'dollar_value': 950},
+            {'user_id': 3, 'name': 'BTC', 'amount': 0.01, 'dollar_value': 250},
+            {'user_id': 3, 'name': 'ATOM', 'amount': 57.14, 'dollar_value': 800},
+            {'user_id': 3, 'name': 'JUNO', 'amount': 153, 'dollar_value': 200},
+            {'user_id': 3, 'name': 'DOT', 'amount': 27, 'dollar_value': 150},
+            {'user_id': 3, 'name': 'USDT', 'amount': 300, 'dollar_value': 300}
         ]
 
         self.demo_user_blockchain_cex_assets = [
-            {'user_id': 3, 'division': "Blockchain", 'name': 'BTC', 'amount': 0.0005, 'dollar_value': 100},
-            {'user_id': 3, 'division': "Blockchain", 'name': 'SOL', 'amount': 5, 'dollar_value': 100},
-            {'user_id': 3, 'division': "Blockchain", 'name': 'NEAR', 'amount': 20, 'dollar_value': 50},
-            {'user_id': 3, 'division': "Cex", 'name': 'DOT', 'amount': 10, 'dollar_value': 40},
-            {'user_id': 3, 'division': "Cex", 'name': 'ATOM', 'amount': 15, 'dollar_value': 250},
-            {'user_id': 3, 'division': "Cex", 'name': 'ETH', 'amount': 0.2, 'dollar_value': 300}
+            {'user_id': 3, 'division': "Blockchain", 'name': 'ETH', 'amount': 0.73, 'dollar_value': 950},
+            {'user_id': 3, 'division': "Blockchain", 'name': 'wETH', 'amount': 0.125, 'dollar_value': 200},
+            {'user_id': 3, 'division': "Blockchain", 'name': 'ATOM', 'amount': 57.14, 'dollar_value': 800},
+            {'user_id': 3, 'division': "Blockchain", 'name': 'JUNO', 'amount': 153, 'dollar_value': 200},
+            {'user_id': 3, 'division': "Cex", 'name': 'BTC', 'amount': 0.01, 'dollar_value': 250},
+            {'user_id': 3, 'division': "Cex", 'name': 'DOT', 'amount': 27, 'dollar_value': 150},
+            {'user_id': 3, 'division': "Cex", 'name': 'USDT', 'amount': 300, 'dollar_value': 300}
         ]
 
         self.demo_user_hodl_staking_farming_stable_assets = [
-            {'user_id': 3, 'division': "Hodl", 'name': 'ATOM', 'amount': 0.0005, 'dollar_value': 100},
-            {'user_id': 3, 'division': "Hodl", 'name': 'OSMO', 'amount': 5, 'dollar_value': 100},
-            {'user_id': 3, 'division': "Staking", 'name': 'ETH', 'amount': 20, 'dollar_value': 50},
-            {'user_id': 3, 'division': "Farming", 'name': 'wETH', 'amount': 10, 'dollar_value': 40},
-            {'user_id': 3, 'division': "Stable", 'name': 'USDT', 'amount': 150, 'dollar_value': 150}
+            {'user_id': 3, 'division': "Hodl", 'name': 'ATOM', 'amount': 21.43, 'dollar_value': 300},
+            {'user_id': 3, 'division': "Hodl", 'name': 'JUNO', 'amount': 76.10, 'dollar_value': 100},
+            {'user_id': 3, 'division': "Hodl", 'name': 'ETH', 'amount': 0.53, 'dollar_value': 850},
+            {'user_id': 3, 'division': "Hodl", 'name': 'wETH', 'amount': 0.125, 'dollar_value': 200},
+            {'user_id': 3, 'division': "Hodl", 'name': 'BTC', 'amount': 0.006, 'dollar_value': 150},
+            {'user_id': 3, 'division': "Hodl", 'name': 'DOT', 'amount': 27, 'dollar_value': 150},
+            {'user_id': 3, 'division': "Staking", 'name': 'ATOM', 'amount': 35.71, 'dollar_value': 500},
+            {'user_id': 3, 'division': "Staking", 'name': 'JUNO', 'amount': 76.90, 'dollar_value': 100},
+            {'user_id': 3, 'division': "Farming", 'name': 'ETH', 'amount': 0.0625, 'dollar_value': 100},
+            {'user_id': 3, 'division': "Farming", 'name': 'BTC', 'amount': 0.004, 'dollar_value': 100},
+            {'user_id': 3, 'division': "Stable", 'name': 'USDT', 'amount': 300, 'dollar_value': 300}
         ]
 
         self.demo_user_networks_assets = [
-            {'user_id': 3, 'division': "Cosmos", 'name': 'ATOM', 'amount': 0.0005, 'dollar_value': 100},
-            {'user_id': 3, 'division': "Cosmos", 'name': 'OSMO', 'amount': 5, 'dollar_value': 100},
-            {'user_id': 3, 'division': "Ethereum", 'name': 'ETH', 'amount': 20, 'dollar_value': 50},
-            {'user_id': 3, 'division': "Ethereum", 'name': 'wETH', 'amount': 10, 'dollar_value': 40},
-            {'user_id': 3, 'division': "Binance", 'name': 'ATOM', 'amount': 15, 'dollar_value': 250},
-            {'user_id': 3, 'division': "Binance", 'name': 'ETH', 'amount': 0.2, 'dollar_value': 300}
+            {'user_id': 3, 'division': "Cosmos", 'name': 'ATOM', 'amount': 57.14, 'dollar_value': 800},
+            {'user_id': 3, 'division': "Cosmos", 'name': 'JUNO', 'amount': 153, 'dollar_value': 200},
+            {'user_id': 3, 'division': "Ethereum", 'name': 'ETH', 'amount': 0.73, 'dollar_value': 950},
+            {'user_id': 3, 'division': "Ethereum", 'name': 'wETH', 'amount': 0.125, 'dollar_value': 200},
+            {'user_id': 3, 'division': "Binance", 'name': 'BTC', 'amount': 0.01, 'dollar_value': 250},
+            {'user_id': 3, 'division': "Binance", 'name': 'DOT', 'amount': 27, 'dollar_value': 150},
+            {'user_id': 3, 'division': "Binance", 'name': 'USDT', 'amount': 300, 'dollar_value': 300}
         ]
 
         self.demo_user_dollar_value = [
-            {'user_id': 3, 'category': 'blockchain_cex', 'division': "Blockchain", 'dollar_value': 100},
-            {'user_id': 3, 'category': 'blockchain_cex', 'division': "Cex", 'dollar_value': 100},
-            {'user_id': 3, 'category': 'blockchain_cex', 'division': "Cex", 'dollar_value': 100},
-            {'user_id': 3, 'category': 'hodl_staking_farming_stable', 'division': "Hodl", 'dollar_value': 100},
-            {'user_id': 3, 'category': 'hodl_staking_farming_stable', 'division': "Staking", 'dollar_value': 50},
-            {'user_id': 3, 'category': 'hodl_staking_farming_stable', 'division': "Farming", 'dollar_value': 50},
-            {'user_id': 3, 'category': 'hodl_staking_farming_stable', 'division': "Stable", 'dollar_value': 500},
-            {'user_id': 3, 'category': 'network', 'division': "Cosmos", 'dollar_value': 500},
-            {'user_id': 3, 'category': 'network', 'division': "Ethereum", 'dollar_value': 100},
-            {'user_id': 3, 'category': 'network', 'division': "Binance", 'dollar_value': 300},
+            {'user_id': 3, 'category': 'blockchain_cex', 'division': "Blockchain", 'dollar_value': 2150},
+            {'user_id': 3, 'category': 'blockchain_cex', 'division': "Cex", 'dollar_value': 700},
+            {'user_id': 3, 'category': 'hodl_staking_farming_stable', 'division': "Hodl", 'dollar_value': 1750},
+            {'user_id': 3, 'category': 'hodl_staking_farming_stable', 'division': "Staking", 'dollar_value': 600},
+            {'user_id': 3, 'category': 'hodl_staking_farming_stable', 'division': "Farming", 'dollar_value': 200},
+            {'user_id': 3, 'category': 'hodl_staking_farming_stable', 'division': "Stable", 'dollar_value': 300},
+            {'user_id': 3, 'category': 'network', 'division': "Cosmos", 'dollar_value': 1000},
+            {'user_id': 3, 'category': 'network', 'division': "Ethereum", 'dollar_value': 1150},
+            {'user_id': 3, 'category': 'network', 'division': "Binance", 'dollar_value': 700},
         ]
 
     def fill_demo_live_user(self):
