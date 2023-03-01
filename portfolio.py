@@ -122,6 +122,9 @@ class LoadJsonFile(LoadFile):
 
 
 class UserInput:
+    """
+    Trida nacte data o adresach penezenek a burzach od uzivatele z JSON souboru a vytvori list objektu.
+    """
 
     def __init__(self):
         self.data_file = None
@@ -129,7 +132,8 @@ class UserInput:
 
     def load_file(self, loader, file_name):
         """
-        Metoda zavola metodu load_file() pro nacteni souboru.
+        Metoda zavola metodu load_file() pro nacteni souboru. V parametru loader musi byt ulozeny
+        objekt tridy LoadJsonFile.
 
         :param loader: objekt tridy LoadJsonFile
         :param file_name: "nazev_souboru.json"
@@ -138,12 +142,28 @@ class UserInput:
         self.data_file = loader.load_file(file_name)
 
     def create_class_objects(self):
-        for data in self.data_file:
-            # print(data)
-            ecosystem_cex = data["ecosystem_cex"]  # Vrati "Cosmos" nebo "Eth" nebo ...
-            # print(ekosystem)
+        """
+        Metoda vygeneruje list objektu vytvorenych podle trid Cosmos, Eth, Binance ... na zaklade dat z JSON souboru.
+        Kazdy objekt predstavuje informace o siti nebo burze. V objektu jsou ulozeny informace jako:
 
-            created_object = eval(f"{ecosystem_cex}(**{data})")  # Vygeneruje se objekt tridy
+        obj.division  - "Blockchain" / "Cex"
+        obj.ecosystem_cex  - "Cosmos" / "Ethereum" / "Binance"
+        obj.network  - "Atom" / "Ethereum"  - (pouze pro blockchain)
+        obj.url_address  - "https://..."  - (pouze pro blockchain)
+
+        Priklad vystupu:
+        [obj1, obj2, obj3, ...]
+
+        :return: [obj1, obj2, obj3, ...]
+        """
+        for data in self.data_file:
+
+            ecosystem_cex = data["ecosystem_cex"]  # Vrati "Cosmos", "Ethereum", "Binance", ...
+
+            # Vygeneruje se objekt tridy
+            # Cely zapis vypada napr. takto:
+            # created_object = eval("Cosmos("Blockchain", "Cosmos", "Atom", "https://...")")
+            created_object = eval(f"{ecosystem_cex}(**{data})")
 
             self.created_objects.append(created_object)
 
