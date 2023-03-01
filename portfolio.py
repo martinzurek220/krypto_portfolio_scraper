@@ -181,6 +181,10 @@ class Tokens(ABC):
 
 
 class Cosmos(Tokens):
+    """
+    Trida pro stazeni dat o vsech tokenech na siti Cosmos.
+    Objekt pro tuto tridu je vygenerovany metodou create_class_objects() ve tride UserInput.
+    """
 
     def __init__(self, division, ecosystem_cex, network, url_address):
         super().__init__(division, ecosystem_cex)
@@ -188,7 +192,17 @@ class Cosmos(Tokens):
         self.url_address = url_address
 
     def get_assets(self):
+        """
+        Metoda z url adresy stahne vsechna data o tokenech(jmeno tokenu, mnozstvi a dolarovou hodnotu).
 
+        Priklad vystupu:
+
+        {'ATOM': {'amount': 115.834153, 'dollar_value': 1762.677158}, 'JUNO': {'amount': 50, 'dollar_value': 65.12}}
+
+        :return: {token1: {}, toke2: {}, ...}
+        """
+
+        # Ceka, az se nacte tag s classou "TokenRow_value__1eEXO".
         wait_till = """WebDriverWait(browser, 20).until(
             EC.presence_of_element_located((By.CLASS_NAME, "TokenRow_value__1eEXO"))
         )"""
@@ -215,6 +229,10 @@ class Cosmos(Tokens):
 
 
 class Ethereum(Tokens):
+    """
+    Trida pro stazeni dat o vsech tokenech na siti Ethereum.
+    Objekt pro tuto tridu je vygenerovany metodou create_class_objects() ve tride UserInput.
+    """
 
     def __init__(self, division, ecosystem_cex, network, url_address):
         super().__init__(division, ecosystem_cex)
@@ -222,6 +240,15 @@ class Ethereum(Tokens):
         self.url_address = url_address
 
     def get_assets(self):
+        """
+        Metoda z url adresy stahne vsechna data o tokenech(jmeno tokenu, mnozstvi a dolarovou hodnotu).
+
+        Priklad vystupu:
+
+        {'Ethereum': {'amount': 0.53, 'dollar_value': 850.12}}
+
+        :return: {token1: {}, toke2: {}, ...}
+        """
 
         wait_till = "1"  # 1 - neceka na nic
 
@@ -644,11 +671,8 @@ if __name__ == "__main__":
     obj_addresses = LoadJsonFile()
     obj_input = UserInput()
 
-    # obj_input.nacti_soubor(obj_adresy, "adresy.json")
-    obj_input.load_file(obj_addresses, "adresy_test.json")
+    obj_input.load_file(obj_addresses, "adresy.json")
     obj_input.create_class_objects()
-
-    # print(obj_input.created_objects)
 
     ###########################################################################
     # Stahnuti assets
@@ -661,14 +685,12 @@ if __name__ == "__main__":
     # Spocitani assets
     ###########################################################################
 
-    vypocet = AssetsCounter()
-    vypocet.count_assets(obj_input)
-    # print(vypocet.all_assets)
-    # print(vypocet.all_assets_list)
-
-    ###########################################################################
-    # Prace s databazi
-    ###########################################################################
-
-    database = Database()
-    database.database_execution()
+    # vypocet = AssetsCounter()
+    # vypocet.count_assets(obj_input)
+    #
+    # ###########################################################################
+    # # Prace s databazi
+    # ###########################################################################
+    #
+    # database = Database()
+    # database.database_execution()
