@@ -97,7 +97,7 @@ class Scraper:
 
 class LoadFile(ABC):
 
-    def load_file(self, nazev_souboru):
+    def load_file(self, file_name):
         pass
 
 
@@ -106,19 +106,18 @@ class LoadJsonFile(LoadFile):
     def __init__(self):
         self.data_file = None
 
-    def load_file(self, nazev_souboru):
+    def load_file(self, file_name):
         """
         Metoda nacte JSON soubor do kolekce ve ktere je ulozen. Napr.:
-        data = [{obj1}, {obj2}, {obj2}]
+        data = [{obj1}, {obj2}, {obj3}]
 
-        :param nazev_souboru:
-        :return:
+        :param file_name: "nazev_souboru.json"
+        :return: kolekce (list, slovnik, ...)
         """
 
-        with open(nazev_souboru) as f:
+        with open(file_name) as f:
             self.data_file = json.load(f)
-            # print(data_file)
-            # print(type(data_file))
+
         return self.data_file
 
 
