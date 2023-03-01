@@ -107,6 +107,13 @@ class LoadJsonFile(LoadFile):
         self.data_file = None
 
     def load_file(self, nazev_souboru):
+        """
+        Metoda nacte JSON soubor do kolekce ve ktere je ulozen. Napr.:
+        data = [{obj1}, {obj2}, {obj2}]
+
+        :param nazev_souboru:
+        :return:
+        """
 
         with open(nazev_souboru) as f:
             self.data_file = json.load(f)
