@@ -152,7 +152,8 @@ class UserInput:
         obj.url_address  - "https://..."  - (pouze pro blockchain)
 
         Priklad vystupu:
-        [obj1, obj2, obj3, ...]
+
+        self.created_objects = [obj1, obj2, obj3, ...]
 
         :return: [obj1, obj2, obj3, ...]
         """
@@ -197,7 +198,7 @@ class Cosmos(Tokens):
 
         Priklad vystupu:
 
-        {
+        self.assets = {
             'ATOM': {'amount': 115.834153, 'dollar_value': 1762.677158},
             'JUNO': {'amount': 51.564756, 'dollar_value': 65.121213}
         }
@@ -248,7 +249,7 @@ class Ethereum(Tokens):
 
         Priklad vystupu:
 
-        {
+        self.assets = {
             'Ethereum': {'amount': 0.53, 'dollar_value': 850.12}
         }
 
@@ -262,8 +263,6 @@ class Ethereum(Tokens):
         # Najde vsechny tokeny v tabulce assets
         found_assets = scraper.parse_html_code_from_string(self.url_address, wait_till)\
             .find("div", {"class": "card-body"})
-
-        # print(found_assets)
 
         amount, name = found_assets.div.find_next_sibling().div.div.text.split()
         amount = float(amount)
@@ -309,7 +308,7 @@ class Binance(Tokens):
 
         Priklad vystupu:
 
-        {
+        self.assets = {
             'ETH': '0.17207750',
             'BNB': '0.05182865',
             'USDT': '126.88427003'
@@ -332,7 +331,7 @@ class Binance(Tokens):
 
         Priklad vystupu:
 
-        {
+        self.spot_prices = {
             'ETH': {'symbol': 'ETHUSDT', 'price': '1650.67000000'},
             'BNB': {'symbol': 'BNBUSDT', 'price': '302.90000000'},
             'USDT': {'symbol': 'USDT', 'price': 1}
@@ -349,7 +348,7 @@ class Binance(Tokens):
 
         # TODO dodelat logiku pro LDBTC (zastakovany BTC a dalsi tokeny)
 
-        # V not_coun jsou tokeny, ktere nechci ve svem portfoliu pocitat. V stable_coins jsou tokeny,
+        # V not_count jsou tokeny, ktere nechci ve svem portfoliu pocitat. V stable_coins jsou tokeny,
         # jejichz dolarova hodnota je pro jednoduchost zaokrouhlena na 1 dolar.
         for token in self.spot_tokens:
             if token not in not_count:
@@ -366,10 +365,10 @@ class Binance(Tokens):
 
         Priklad vystupu:
 
-        {
-            'ETH': {'amount': 0.1720775, 'dollar_value': 779.5132510999999},
+        self.assets = {
+            'ETH': {'amount': 0.4720775, 'dollar_value': 779.5132510999999},
             'BNB': {'amount': 0.05182865, 'dollar_value': 15.69371522},
-            'USDT': {'amount': 126.88427003, 'dollar_value': 1276.88427003}
+            'USDT': {'amount': 126.88427003, 'dollar_value': 126.88427003}
         }
 
         :return: {token1: {amount: xxx, dollar_value: xxx}, token2: ....}
@@ -390,6 +389,9 @@ class Binance(Tokens):
 
 
 class AssetsCounter:
+    """
+    Trida pro scitani tokenu, mnozstvi a dolarove hodnoty.
+    """
 
     def __init__(self):
 
@@ -409,22 +411,24 @@ class AssetsCounter:
 
     def count_all_assets(self, objects):
         """
+        Metoda vezme vsechny tokeny, spocita je dohromady a vrati jejich mnozstvi a dolarovou hodnotu.
+        Vystup je pripraven ve formatu pro zapis do databaze.
 
         Příklad výstupu:
 
-        [{'name': 'ATOM', 'amount': 214.78, 'dollar_value': 2908},
-         {'name': 'JUNO', 'amount': 62.22, 'dollar_value': 79},
-         {'name': 'OSMO', 'amount': 55.69, 'dollar_value': 56},
-         {'name': 'ETH', 'amount': 2.83, 'dollar_value': 4655}]
+        self.all_assets_list = [
+            {'name': 'ATOM', 'amount': 214.78, 'dollar_value': 2908},
+            {'name': 'JUNO', 'amount': 62.22, 'dollar_value': 79},
+            {'name': 'OSMO', 'amount': 55.69, 'dollar_value': 56},
+            {'name': 'ETH', 'amount': 2.83, 'dollar_value': 4655}
+        ]
 
-        :param objects:
-        :return:
+        :param objects: [obj1, obj2, obj3, ...] - list objektu trid Cosmos / Ethereum / Binance ...
         """
 
         for obj in objects.created_objects:
 
             for key, value in obj.assets.items():
-                # print(f"key: {key}, value: {value}")
 
                 if key not in self.all_assets:
                     value_part = {"amount": value["amount"], "dollar_value": value["dollar_value"]}
@@ -438,6 +442,30 @@ class AssetsCounter:
             self.all_assets_list.append(slovnik)
 
     def count_blockchain_cex_assets(self, objects):
+        """
+        Metoda vezme vsechny tokeny na blockchainu a cex, separatne je spocita,
+        vrati jejich mnozstvi a dolarovou hodnotu.
+        Vystup je pripraven ve formatu pro zapis do databaze.
+
+        Příklad výstupu:
+
+        self.blockchain_assets_list = [
+            {'user_id': 2, 'division': 'Blockchain', 'name': 'ATOM', 'amount': 215.85, 'dollar_value': 2787},
+            {'user_id': 2, 'division': 'Blockchain', 'name': 'ETH', 'amount': 2.36, 'dollar_value': 3926}
+        ]
+
+        self.cex_assets_list = [
+            {'user_id': 2, 'division': 'Cex', 'name': 'ETH', 'amount': 0.47, 'dollar_value': 784},
+            {'user_id': 2, 'division': 'Cex', 'name': 'BNB', 'amount': 0.05, 'dollar_value': 16},
+            {'user_id': 2, 'division': 'Cex', 'name': 'USDT', 'amount': 1276.88, 'dollar_value': 1277}
+        ]
+
+        self.blockchain_dollar_value = 6713.390994513175
+
+        self.cex_dollar_value = 2077.98646250801
+
+        :param objects: [obj1, obj2, obj3, ...] - list objektu trid Cosmos / Ethereum / Binance ...
+        """
 
         for obj in objects.created_objects:
 
@@ -459,7 +487,8 @@ class AssetsCounter:
                     # print(f"key: {key}, value: {value}")
 
                     if key not in self.cex_assets:
-                        value_part = {"division": "Cex", "amount": value["amount"], "dollar_value": value["dollar_value"]}
+                        value_part = {"division": "Cex", "amount": value["amount"],
+                                      "dollar_value": value["dollar_value"]}
                         self.cex_assets[key] = value_part
                         self.cex_dollar_value += value["dollar_value"]
                     else:
@@ -489,6 +518,11 @@ class AssetsCounter:
         # print(self.cex_dollar_value)
 
     def count_assets(self, objects):
+        """
+        Metoda pouze zavola metody pro vypocet assetu.
+
+        :param objects: [obj1, obj2, obj3, ...] - list objektu trid Cosmos / Ethereum / Binance ...
+        """
 
         self.count_all_assets(objects)
         self.count_blockchain_cex_assets(objects)
@@ -713,7 +747,7 @@ if __name__ == "__main__":
     obj_addresses = LoadJsonFile()
     obj_input = UserInput()
 
-    obj_input.load_file(obj_addresses, "adresy_test.json")
+    obj_input.load_file(obj_addresses, "adresy.json")
     obj_input.create_class_objects()
 
     ###########################################################################
