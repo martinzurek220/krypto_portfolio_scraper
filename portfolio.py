@@ -552,7 +552,13 @@ class Database:
         self.demo_user_networks_assets = []
         self.demo_user_dollar_value = []
 
+        self.blockchain_assets = []
+        self.cex_assets = []
+
     def connection(self):
+        """
+        Nastaveni pripojeni do databaze.
+        """
 
         # engine = create_engine(config.postgresql_engine, echo=True)   =>   echo=True  = debug mod
         self.engine = create_engine(config.postgresql_engine)
@@ -560,6 +566,9 @@ class Database:
         self.metadata = MetaData()
 
     def add_tables(self):
+        """
+        Metoda vytvori prazdne tabulky pro uchovani dat.
+        """
 
         self.viewer_portfolio_assets = Table(
             "viewer_portfolio_assets",
@@ -620,13 +629,19 @@ class Database:
         )
 
     def fill_my_user(self):
+        """
+        Data pro muj account
+        """
 
         self.add_other_informations()
 
-        self.a = vypocet.blockchain_assets_list
-        self.b = vypocet.cex_assets_list
+        self.blockchain_assets = vypocet.blockchain_assets_list
+        self.cex_assets = vypocet.cex_assets_list
 
     def fill_demo_user(self):
+        """
+        Data pro demo user
+        """
 
         self.demo_user_all_assets = [
             {'user_id': 3, 'name': 'wETH', 'amount': 0.125, 'dollar_value': 200},
@@ -685,6 +700,9 @@ class Database:
         ]
 
     def fill_demo_live_user(self):
+        """
+        Data pro demo_live user
+        """
 
         self.demo_live_user = [
             {'user_id': 4, 'name': 'SOL', 'amount': 5, 'dollar_value': 100},
@@ -694,6 +712,9 @@ class Database:
         ]
 
     def add_other_informations(self):
+        """
+        Pridani user_id a date_and_time z memu accountu
+        """
 
         date_and_time = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
@@ -704,6 +725,9 @@ class Database:
         self.my_user = vypocet.all_assets_list
 
     def database_execution(self):
+        """
+        Metoda vytvori vsechny tabulky, vlozi do nich data a zapise data do databaze.
+        """
 
         # Pocatecni inicializace databaze
         self.connection()
@@ -724,8 +748,8 @@ class Database:
         connection.execute(self.viewer_portfolio_assets.insert(), self.demo_user_all_assets)
         connection.execute(self.viewer_portfolio_assets.insert(), self.demo_live_user)
 
-        connection.execute(self.viewer_blockchain_cex_assets.insert(), self.a)
-        connection.execute(self.viewer_blockchain_cex_assets.insert(), self.b)
+        connection.execute(self.viewer_blockchain_cex_assets.insert(), self.blockchain_assets)
+        connection.execute(self.viewer_blockchain_cex_assets.insert(), self.cex_assets)
         connection.execute(self.viewer_blockchain_cex_assets.insert(), self.demo_user_blockchain_cex_assets)
 
         connection.execute(self.viewer_hodl_staking_farming_stable_assets.insert(),
