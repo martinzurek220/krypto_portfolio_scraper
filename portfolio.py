@@ -197,7 +197,10 @@ class Cosmos(Tokens):
 
         Priklad vystupu:
 
-        {'ATOM': {'amount': 115.834153, 'dollar_value': 1762.677158}, 'JUNO': {'amount': 50, 'dollar_value': 65.12}}
+        {
+            'ATOM': {'amount': 115.834153, 'dollar_value': 1762.677158},
+            'JUNO': {'amount': 51.564756, 'dollar_value': 65.121213}
+        }
 
         :return: {token1: {}, toke2: {}, ...}
         """
@@ -245,9 +248,11 @@ class Ethereum(Tokens):
 
         Priklad vystupu:
 
-        {'Ethereum': {'amount': 0.53, 'dollar_value': 850.12}}
+        {
+            'Ethereum': {'amount': 0.53, 'dollar_value': 850.12}
+        }
 
-        :return: {token1: {}, toke2: {}, ...}
+        :return: {token1: {}, token2: {}, ...}
         """
 
         wait_till = "1"  # 1 - neceka na nic
@@ -277,6 +282,10 @@ class Ethereum(Tokens):
 
 
 class Binance(Tokens):
+    """
+    Trida pro stazeni dat o vsech tokenech na Burze Binance pomoci API.
+    Objekt pro tuto tridu je vygenerovany metodou create_class_objects() ve tride UserInput.
+    """
 
     def __init__(self, division, ecosystem_cex):
         super().__init__(division, ecosystem_cex)
@@ -288,11 +297,26 @@ class Binance(Tokens):
         self.spot_prices = {}
 
     def _connection(self):
+        """
+        Metoda pro API pripojeni.
+        """
 
-        # Pripojeni API
         self.client = Client(config.binance_api_key, config.binance_secret_key)
 
     def get_spot_asets(self):
+        """
+        Metoda pro ziskani vsech tokenu na spotu.
+
+        Priklad vystupu:
+
+        {
+            'ETH': '0.17207750',
+            'BNB': '0.05182865',
+            'USDT': '126.88427003'
+        }
+
+        :return: {token1: mnozstvi, token2: mnozstvi, token3: mnozstvi, ...}
+        """
 
         # vypise vsechny tokeny co jsou na binance a k nim moji hodnotu, ikdyz je 0.0
         spot = self.client.get_account()
@@ -300,11 +324,22 @@ class Binance(Tokens):
         for token in spot["balances"]:  # Vybere ze ziskaneho slovniku jen info o tokenech
             if float(token["free"]) > 0.0:  # Vybere jen mnozstvi tokenu > 0.0
                 # Ulozi do slovniku info o tokenu {'BTC': '0.5', 'ETH': '2.0'}
-                self.spot_tokens[token['asset']] = token['free']
-
-        # print(self.spot_tokens)
+                self.spot_tokens[token["asset"]] = token["free"]
 
     def get_token_price(self):
+        """
+        Metoda ziska ke vsem tokenum dolarovou hodnotu v paru s USDT.
+
+        Priklad vystupu:
+
+        {
+            'ETH': {'symbol': 'ETHUSDT', 'price': '1650.67000000'},
+            'BNB': {'symbol': 'BNBUSDT', 'price': '302.90000000'},
+            'USDT': {'symbol': 'USDT', 'price': 1}
+        }
+
+        :return: {token1: {symbol: xxx, price: xxx}, token2: ....}
+        """
 
         # TODO dodelat vsechny tokeny, ktere se nebudou ukladat
         not_count = ["LDBTC", "NFT"]
@@ -312,30 +347,37 @@ class Binance(Tokens):
         # TODO dodelat vsechny tokeny, kde se nebude pridelavat "USDT" napr USDTUSDT
         stable_coins = ["USDT", "BUSD", "USDC"]
 
-        # TODO dodelat logiku pro LDBTC (zastakovany BTC)
+        # TODO dodelat logiku pro LDBTC (zastakovany BTC a dalsi tokeny)
 
+        # V not_coun jsou tokeny, ktere nechci ve svem portfoliu pocitat. V stable_coins jsou tokeny,
+        # jejichz dolarova hodnota je pro jednoduchost zaokrouhlena na 1 dolar.
         for token in self.spot_tokens:
             if token not in not_count:
                 if token not in stable_coins:
-                    # if token not in not_count or token not in stable_coins:
-                    # print(token)
                     # price vrati {'symbol': 'BTCUSDT', 'price': '24700.91000000'}
-                    price = self.client.get_symbol_ticker(symbol=token+"USDT")
-                    # print(price)
-                    # print(type(price["price"]))
-                    self.spot_prices[token] = price
+                    symbol_and_price = self.client.get_symbol_ticker(symbol=token+"USDT")
+                    self.spot_prices[token] = symbol_and_price
                 elif token in stable_coins:
                     self.spot_prices[token] = {"symbol": token, "price": 1}
 
-        # print(self.spot_prices)
-
     def get_assets(self):
+        """
+        Metoda vrati vsechny tokeny s jejich mnozstvim a dolarovou hodnotou.
+
+        Priklad vystupu:
+
+        {
+            'ETH': {'amount': 0.1720775, 'dollar_value': 779.5132510999999},
+            'BNB': {'amount': 0.05182865, 'dollar_value': 15.69371522},
+            'USDT': {'amount': 126.88427003, 'dollar_value': 1276.88427003}
+        }
+
+        :return: {token1: {amount: xxx, dollar_value: xxx}, token2: ....}
+        """
 
         self._connection()
         self.get_spot_asets()
         self.get_token_price()
-
-        # self.assets[]
 
         for key, value in self.spot_tokens.items():  # Vytvori lovnik s amount
             self.assets[key] = {"amount": float(value), "dollar_value": 0}
@@ -437,14 +479,14 @@ class AssetsCounter:
                        "dollar_value": round(value["dollar_value"])}
             self.cex_assets_list.append(slovnik)
 
-        print("Blockchain assets: ", self.blockchain_assets)
-        print("Cex assets: ", self.cex_assets)
-
-        print("Blockchain assets database: ", self.blockchain_assets_list)
-        print("Cex assets database: ", self.cex_assets_list)
-
-        print(self.blockchain_dollar_value)
-        print(self.cex_dollar_value)
+        # print("Blockchain assets: ", self.blockchain_assets)
+        # print("Cex assets: ", self.cex_assets)
+        #
+        # print("Blockchain assets database: ", self.blockchain_assets_list)
+        # print("Cex assets database: ", self.cex_assets_list)
+        #
+        # print(self.blockchain_dollar_value)
+        # print(self.cex_dollar_value)
 
     def count_assets(self, objects):
 
@@ -671,7 +713,7 @@ if __name__ == "__main__":
     obj_addresses = LoadJsonFile()
     obj_input = UserInput()
 
-    obj_input.load_file(obj_addresses, "adresy.json")
+    obj_input.load_file(obj_addresses, "adresy_test.json")
     obj_input.create_class_objects()
 
     ###########################################################################
@@ -685,12 +727,12 @@ if __name__ == "__main__":
     # Spocitani assets
     ###########################################################################
 
-    # vypocet = AssetsCounter()
-    # vypocet.count_assets(obj_input)
-    #
-    # ###########################################################################
-    # # Prace s databazi
-    # ###########################################################################
-    #
-    # database = Database()
-    # database.database_execution()
+    vypocet = AssetsCounter()
+    vypocet.count_assets(obj_input)
+
+    ###########################################################################
+    # Prace s databazi
+    ###########################################################################
+
+    database = Database()
+    database.database_execution()
