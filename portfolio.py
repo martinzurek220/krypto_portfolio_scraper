@@ -143,12 +143,9 @@ class UserInput:
             ecosystem_cex = data["ecosystem_cex"]  # Vrati "Cosmos" nebo "Eth" nebo ...
             # print(ekosystem)
 
-            created_object = eval(f"{ecosystem_cex}(**{data})")  # Trida se vygeneruje
+            created_object = eval(f"{ecosystem_cex}(**{data})")  # Vygeneruje se objekt tridy
 
-            self.add_object(created_object)
-
-    def add_object(self, created_object):
-        self.created_objects.append(created_object)
+            self.created_objects.append(created_object)
 
 
 class Tokens(ABC):
