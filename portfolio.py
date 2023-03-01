@@ -128,8 +128,14 @@ class UserInput:
         self.created_objects = []
 
     def load_file(self, loader, file_name):
+        """
+        Metoda zavola metodu load_file() pro nacteni souboru.
+
+        :param loader: objekt tridy LoadJsonFile
+        :param file_name: "nazev_souboru.json"
+        :return: kolekce (list, slovnik, ...)
+        """
         self.data_file = loader.load_file(file_name)
-        return self.data_file
 
     def create_class_objects(self):
         for data in self.data_file:
